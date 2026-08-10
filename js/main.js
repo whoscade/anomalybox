@@ -3,14 +3,14 @@ const wordDisplay = document.getElementById('wordDisplay');
 const statusLine = document.getElementById('statusLine');
 
 let started = false;
+let currentUtterance = null;
 
 screenTarget.addEventListener('click', async () => {
   if (started) return;
   started = true;
   statusLine.textContent = 'starting...';
 
-  const unlock = new SpeechSynthesisUtterance(' ');
-  speechSynthesis.speak(unlock);
+  speak(' ');
 
   try {
     await loadWordBank();
@@ -47,7 +47,20 @@ function triggerReading() {
 }
 
 function speak(word) {
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.rate = 0.8;
-  speechSynthesis.speak(utterance);
+  speechSynthesis.cancel();
+
+  currentUtterance = new SpeechSynthesisUtterance(word);
+  currentUtterance.rate = 0.8;
+
+  currentUtterance.onstart = () => {
+    statusLine.textContent = 'speaking: ' + word;
+  };
+  currentUtterance.onend = () => {
+    statusLine.textContent = 'reading: ' + Math.round(currentReading);
+  };
+  currentUtterance.onerror = (e) => {
+    statusLine.textContent = 'TTS ERROR: ' + e.error;
+  };
+
+  speechSynthesis.speak(currentUtterance);
 }
