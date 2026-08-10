@@ -7,8 +7,18 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="wordDisplay">ANOMALYBOX — TAP TO START</div>
-  <button id="startBtn">START</button>
+  <div class="device">
+    <div class="faceplate">
+      <div class="header">ANOMALYBOX</div>
+      <div class="screen-frame" id="screenTarget">
+        <div class="glass">
+          <div class="label" id="modeLabel">DICTIONARY</div>
+          <div class="word" id="wordDisplay">TAP SCREEN TO START</div>
+          <div class="sub" id="statusLine">awaiting input</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="js/dictionary.js"></script>
   <script src="js/sensors.js"></script>
