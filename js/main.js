@@ -1,20 +1,45 @@
-const startBtn = document.getElementById('startBtn');
+const screenTarget = document.getElementById('screenTarget');
 const wordDisplay = document.getElementById('wordDisplay');
+const statusLine = document.getElementById('statusLine');
 
-startBtn.addEventListener('click', async () => {
-  await loadWordBank();
-  const ok = await startSensors();
-  if (!ok) {
-    wordDisplay.textContent = 'MOTION ACCESS DENIED';
+let started = false;
+
+screenTarget.addEventListener('click', async () => {
+  if (started) return;
+  started = true;
+  statusLine.textContent = 'starting...';
+
+  try {
+    await loadWordBank();
+    statusLine.textContent = 'word bank loaded';
+  } catch (err) {
+    statusLine.textContent = 'ERROR loading words: ' + err.message;
+    started = false;
     return;
   }
-  startBtn.style.display = 'none';
+
+  try {
+    const ok = await startSensors();
+    if (!ok) {
+      statusLine.textContent = 'motion access denied';
+      started = false;
+      return;
+    }
+  } catch (err) {
+    statusLine.textContent = 'ERROR starting sensors: ' + err.message;
+    started = false;
+    return;
+  }
+
+  wordDisplay.textContent = 'LISTENING';
+  statusLine.textContent = 'active';
   setInterval(triggerReading, 4000);
 });
 
 function triggerReading() {
   const word = getWordForReading(currentReading);
   wordDisplay.textContent = word;
+  statusLine.textContent = 'reading: ' + Math.round(currentReading);
   speak(word);
 }
 
